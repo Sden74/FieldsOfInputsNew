@@ -2,4 +2,8 @@
     <string name="app_name">FieldsOfInputsNew</string>
     <string name="login">login</string>
     <string name="invalid_email_message">Invalid Email</string>
+    <string name="agreement_full_text">I agree with terms of use and privacy policy</string>
+    <string name="attention">Внимание</string>
+    <string name="service_is_unavailable">Сервис временно недоступен</string>
+    <string name="close">закрыть</string>
 </resources>

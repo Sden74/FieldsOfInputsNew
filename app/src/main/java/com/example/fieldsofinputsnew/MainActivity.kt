@@ -1,14 +1,25 @@
 package com.example.fieldsofinputsnew
 
+import android.app.AlertDialog
+import android.app.Dialog
+import android.app.ProgressDialog.show
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
+import android.text.SpannableString
 import android.text.TextWatcher
 import android.util.Log
 import android.util.Patterns.EMAIL_ADDRESS
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
+import android.widget.CheckBox
+import android.widget.ProgressBar
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
@@ -55,18 +66,50 @@ class MainActivity : AppCompatActivity() {
         textInputEditText.listenChanges{textInputLayout.isErrorEnabled=false}
 
         val loginButton = findViewById<View>(R.id.loginButton)
+        val contentLayout = findViewById<ViewGroup>(R.id.contentLayout)
+        val progressBar = findViewById<View>(R.id.progressBar)
         loginButton.setOnClickListener{
             if(EMAIL_ADDRESS.matcher(textInputEditText.text.toString()).matches()){
                 /*val imm = this.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
                 imm.hideSoftInputFromWindow(textInputEditText.windowToken,0)*/
                 hideKeyboard(textInputEditText)
-                loginButton.isEnabled=false
+                contentLayout.visibility = View.GONE
+                //loginButton.isEnabled=false
+                progressBar.visibility=View.VISIBLE
                 Snackbar.make(loginButton,"Go to postLogin", Snackbar.LENGTH_LONG).show()
+                Handler(Looper.myLooper()!!).postDelayed({
+                    contentLayout.visibility = View.VISIBLE
+                    progressBar.visibility=View.GONE
+
+                    //val dialog = BottomSheetDialog(this)
+                    val dialog = Dialog(this)
+                    val view = LayoutInflater.from(this).inflate(R.layout.dialog,contentLayout,false)
+                    dialog.setCancelable(false)
+                    view.findViewById<View>(R.id.closeButton).setOnClickListener{
+                        dialog.dismiss()
+                    }
+                    dialog.setContentView(view)
+                    dialog.show()
+                    /*
+                    BottomSheetDialog(this).run{
+                        setContentView(R.layout.dialog)
+                        setCancelable(false)
+                        show()
+                    }
+*/
+                },3000)
             }else{
                 textInputLayout.isErrorEnabled = true
                 textInputLayout.error = getString(R.string.invalid_email_message)
             }
         }
+
+        val checkBox = findViewById<CheckBox>(R.id.checkBox)
+        val spannableString = SpannableString(getString(R.string.agreement_full_text))
+        //checkBox.text=spannableString
+
+        loginButton.isEnabled=false
+        checkBox.setOnCheckedChangeListener{_,isChecked->loginButton.isEnabled=isChecked}
     }
 }
 fun AppCompatActivity.hideKeyboard(view: View){
